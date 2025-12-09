@@ -1,7 +1,7 @@
 // functions/api/[...path].ts
 
 interface Env {
-  AUTH_TOKEN: string;
+  AUTHTOKEN: string;
 }
 
 function jsonResponse(
@@ -42,7 +42,7 @@ export async function onRequest({
     return jsonResponse(401, "Bearer token is required.");
   }
   const authToken = authorization.split(" ")[1];
-  if (authToken !== env.AUTH_TOKEN) {
+  if (authToken !== env.AUTHTOKEN) {
     return jsonResponse(401, "Token is invalid.");
   }
 
