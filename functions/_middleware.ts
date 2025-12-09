@@ -1,4 +1,4 @@
-// functions/api/[...path].ts
+// functions/_middleware.ts
 
 interface Env {
   AUTHTOKEN: string;
@@ -21,18 +21,23 @@ function jsonResponse(
   );
 }
 
-// ✅ 新版 Pages Functions 写法：直接解构 { request, env, params }
 export async function onRequest({
   request,
   env,
-  params,
 }: {
   request: Request;
   env: Env;
-  params: { path?: string[] };
 }): Promise<Response> {
-  // 重构目标路径（去掉 /api 前缀）
-  const targetPath = `/${params.path?.join("/") || ""}`;
+  const url = new URL(request.url);
+
+  // 只处理 /api/ 开头的请求
+  if (!url.pathname.startsWith("/api/")) {
+    // 非 API 请求：返回静态资源（或 404）
+    return new Response("Not Found", { status: 404 });
+  }
+
+  // 提取目标路径（去掉 /api 前缀）
+  const targetPath = url.pathname.replace(/^\/api/, "");
 
   const authorization = request.headers.get("Authorization");
   const xGoogApiKey = request.headers.get("x-goog-api-key");
